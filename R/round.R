@@ -39,6 +39,8 @@ round <- function( data_in, dp = 2, text_table = TRUE ) {
 
   dp_length <- length( dp )
 
+  was_tibble <- FALSE
+
   # Stop if supplied input is a publish_tab data object
   if ( "publish_tab" %in% class( data_in ) )
     stop( "Apply rounding BEFORE calling publish_tab( )", call. = F )
@@ -83,6 +85,14 @@ round <- function( data_in, dp = 2, text_table = TRUE ) {
 
   if ( is.table(data_in) | is.matrix(data_in) |
        is.data.frame(data_in) | tibble::is_tibble(data_in) ) {
+
+    # Temporarily convert any tibbles to data.frames to avoid problem with
+    # change to column descriptor in resulting tibble. (Outcome changed
+    # back to a tibble at end of function.)
+    if (tibble::is_tibble( data_in ) ) {
+      data_in <- as.data.frame( data_in )
+      was_tibble <- TRUE
+    }
 
     data_length <- ncol( data_in )
 
@@ -234,6 +244,9 @@ round <- function( data_in, dp = 2, text_table = TRUE ) {
                  "numeric and logial vectors\n",
                  "matrix, table, data.frame and tibble"),
           call. = F )
+
+  # Convert back to a tibble if was a tibble originally
+  if ( was_tibble == TRUE ) data_out <- tibble::as_tibble( data_out )
 
   return( data_out )
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/group_data.R
 \name{group_data}
 \alias{group_data}
-\title{Allocated continuous data to groups using user-friendly class labels}
+\title{Group continuous data}
 \usage{
 group_data(
   data = data,
@@ -36,7 +36,7 @@ group_data(
 Factor vector, providing one class label per \code{data} value.
 }
 \description{
-Allocated continuous data to groups using user-friendly class labels
+Group continuous data
 }
 \details{
 The \code{cut( )} function under-pinning \code{group_data( )} is supplied with a set of class boundaries defining the lowest boundary of the first (lowest) class, and the upper boundary of the first and any subsequent classes.

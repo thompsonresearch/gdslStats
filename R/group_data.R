@@ -1,4 +1,4 @@
-#' Allocated continuous data to groups using user-friendly class labels
+#' Group continuous data
 #'
 #' @param data A vector of \emph{numeric} values.
 #' @param method One of "equal" (equal class intervals), "quantile" (equal class observations) or "user" (user-defined class boundaries). Default is "equal".
@@ -81,6 +81,11 @@ group_data <- function( data = data, method = "equal",  breaks = 5,
 
     dps <- NULL
 
+    # Strip out any NA values, as they break the subsequent code
+    # and are not relevant to finding the number of decimal places
+    # used in valid values
+    x <- x[ which( !is.na( x ) ) ]
+
     for (i in 1:length(x) ) {
       if (abs(x[i] - base::round(x[i])) > .Machine$double.eps^0.5) {
         dps[i] <-
@@ -96,8 +101,8 @@ group_data <- function( data = data, method = "equal",  breaks = 5,
 
   }
 
-  # Convert one column data.frame to vector; report error if 2+ column
-  # data.frame
+  # If data is one column data.frame, convert to vector; report error if
+  #  data is a 2+ column data.frame
   if ( is.data.frame( data) ) {
     if ( ncol( data ) > 1 )
       stop("Only vectors or single column data.frames/tibbles accepted as ",
@@ -123,8 +128,10 @@ group_data <- function( data = data, method = "equal",  breaks = 5,
   integer.places <- nchar(as.character(floor(max(data, na.rm=TRUE))))
 
   #If output.dp supplied by user is >0, but integer data supplied, over-ride
-  # and set to 0dp; then warn user that this has been done
-  if ( ( is.null( output.dp ) == FALSE ) & ( integer.values == TRUE ) ) {
+  # and set to 0dp (unless mid.point == TRUE);
+  # then warn user that this has been done
+  if ( ( is.null( output.dp ) == FALSE ) & ( integer.values == TRUE ) &
+       ( mid.point == FALSE ) ) {
     if (output.dp > 0) {
       output.dp <- 0
       warning("For integer data values, only integer class bounds will be ",
@@ -136,10 +143,15 @@ group_data <- function( data = data, method = "equal",  breaks = 5,
   dps <- max( decimal_places( data ) )
 
   #If output.dp not supplied by user, set to default value
-  #[same as precision to which input data is measured]
+  #[same as precision to which input data is measured, or one more
+  # if mid.point == TRUE]
   if (is.null(output.dp)==TRUE) {
     if (integer.values==TRUE) {
-      output.dp <- 0
+      #if (mid.point == FALSE) {
+        output.dp <- 0
+      #} else {
+      #  output.dp <- 1
+      #}
     } else {
       output.dp <- dps
     }
@@ -176,24 +188,24 @@ group_data <- function( data = data, method = "equal",  breaks = 5,
       stop("User-supplied breaks are not numeric.", call. = F)
   }
 
-  # If method is equal (i.e. equal interval) OR quantile (i.e. equal data),
-  # warn if more than one breaks value has been supplied and take
-  # corrective action
+  # If more than one break value supplied and method is
+  # equal (i.e. equal interval) OR quantile (i.e. equal data),
+  # reset method to user and warn that corrective action has been taken
   if ( method == "equal" & length(breaks) > 1 ) {
-    warning("More than one breaks value specified for equal interval method. ",
-            "Breaks reset to default value of 5.", call. = F )
-    breaks <- 5
+    warning("More than one breaks value specified so method reset to user",
+            call. = F )
+    method <- "user"
   }
   if ( method == "quantile" & length(breaks) > 1 ) {
-    warning("More than one breaks value specified for quantile method. ",
-            "Breaks reset to default value of 5.", call. = F )
-    breaks <- 5
+    warning("More than one breaks value specified so method reset to user",
+            call. = F )
+    method <- "user"
   }
 
   # Calculate breaks to be used, if quantiles required
   if ( method == "quantile" ) {
     cum_proportions <- seq( from = 0, to = 1, by = 1 / breaks )
-    breaks <- quantile( data, probs = cum_proportions, na.rm = TRUE )
+    breaks <- stats::quantile( data, probs = cum_proportions, na.rm = TRUE )
   }
 
   # Calculate breaks to be used if equal  intervals required
@@ -217,8 +229,9 @@ group_data <- function( data = data, method = "equal",  breaks = 5,
   # min and max data values due to rounding issues.
 
   if ( method == "equal" ) {
-    range <- max( data ) - min( data)
-    breaks <- seq( min( data ), max( data ), by = range/breaks )
+    range <- max( data, na.rm = TRUE ) - min( data, na.rm = TRUE )
+    breaks <- seq( min( data, na.rm=TRUE ), max( data, na.rm=TRUE ),
+                   by = range/breaks )
   }
 
   # Remove any duplicate breaks, providing warning if this is done
@@ -248,16 +261,18 @@ group_data <- function( data = data, method = "equal",  breaks = 5,
   lower.bounds <- breaks[1:n]
   lower.bounds[2:n] <- lower.bounds[2:n] + 10^-dps
 
+  # Calculate difference between each upper bound
+  bounds.interval <- upper.bounds[1] - lower.bounds[1]
+  for (i in 2:n ) {
+    bounds.interval[i] <- upper.bounds[i] - upper.bounds[i-1]
+  }
+
   #Check to see if user has requested interval mid-points to be used as labels
   # instead of class boundaries. Convert labels to interval mid-points
   # if required
   if (mid.point == TRUE) {
-    if ( upper.bounds[ n ] == Inf ) {
-      mid.points <- (upper.bounds[1:n-1] +  lower.bounds[1:n-1]) / 2
-      mid.points[ n ] <- Inf
-    } else {
-      mid.points <- (upper.bounds +  lower.bounds) / 2
-    }
+     mid.points <- upper.bounds - (bounds.interval / 2)
+     if ( upper.bounds[ n ] == Inf ) mid.points[ n ] <- Inf
   }
 
   # if mid-points have been requested, return suitable formatted mid-points,
@@ -265,6 +280,9 @@ group_data <- function( data = data, method = "equal",  breaks = 5,
   # bounds
 
   if (mid.point == TRUE) {
+
+    if ( integer.values == TRUE ) output.dp <- 1
+
     # Round mid.points to required output.dp, then convert into
     # character strings that retain thes dp, and removes preceding spaces
     labels <-

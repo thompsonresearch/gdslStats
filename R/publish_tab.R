@@ -15,7 +15,7 @@
 #' publish_tab( example_table )
 #'
 #' # As above, but with rounding (which must happen before publish_tab is called)
-#' example_table |> round( dp = 0 ) |> publish_tab( )
+#' example_table |> round( dp = c( 1, 1, 0, 0 ) ) |> publish_tab( )
 publish_tab <- function( res, line_width = 1.2 ) {
 
   # Check supplied data object is of right kind

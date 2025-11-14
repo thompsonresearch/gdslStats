@@ -10,18 +10,13 @@ License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Imports: 
-    base,
-    dplyr,
-    flextable,
-    forcats,
-    officer,
-    rlang,
-    stringr,
-    tibble,
-    tidyr
+Imports: base, corrplot, dplyr, flextable, forcats, officer, patchwork,
+        rlang, stringr, tibble, tidyr
 URL: https://github.com/DrPaulWilliamson/gdslStats
 BugReports: https://github.com/DrPaulWilliamson/gdslStats/issues
-Depends: 
-    R (>= 2.10)
+Depends: R (>= 2.10)
 LazyData: true
+NeedsCompilation: no
+Packaged: 2024-12-01 10:42:51 UTC; administrator
+Author: Paul Williamson [aut, cre] (<https://orcid.org/0000-0002-8836-6570>)
+Maintainer: Paul Williamson <P.Williamson@liverpool.ac.uk>

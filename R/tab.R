@@ -270,6 +270,12 @@ tab <- function( data=NULL, formula=NULL, weights,
   ## (b) Check that a valid formula has been supplied.
 
   ### Count number of tildes in supplied formula
+
+  # For some reason, adding this line of code allows causes the following
+  # str_count command to work. Without it, an error is thrown
+
+  formula_check <- purrr::is_formula( formula )
+
   n_tilde <- stringr::str_count( dplyr::as_label( dplyr::enquo(formula)), "~" )
 
   if ( n_tilde == 0 )
@@ -314,7 +320,7 @@ tab <- function( data=NULL, formula=NULL, weights,
            call. = F )
 
   ### Belt-and-braces final check to make sure a formula has been supplied
-  if( is(formula, "formula") == FALSE )
+  if( methods::is(formula, "formula") == FALSE )
     stop( paste0('Specification of required tabulation not given in ',
                  'formula format (e.g. x ~ y OR ~ y'),
           call.=F )
