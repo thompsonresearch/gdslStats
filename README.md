@@ -27,12 +27,12 @@ You can install the most recent development version of gdslStats from
 
 ``` r
 # install.packages("devtools")
-install_github("sgmhowar/gdslStats")
+devtools::install_github("sgmhowar/gdslStats")
 ```
 
 Or the original release with:
 
 ``` r
 # install.packages("devtools")
-install_github("DrPaulWilliamson/gdslStats")
+devtools::install_github("DrPaulWilliamson/gdslStats")
 ```
