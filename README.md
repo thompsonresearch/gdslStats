@@ -25,6 +25,12 @@ You can install the most recent development version of gdslStats from
 
 ``` r
 # install.packages("devtools")
+devtools::install_github("thompsonresearch/gdslStats")
+```
+Or from the updated release by Matthew Howard:
+
+``` r
+# install.packages("devtools")
 devtools::install_github("sgmhowar/gdslStats")
 ```
 
