@@ -9,7 +9,7 @@
 
 This forked Repository is an updated version by Matthew Howard of the package created by Dr Paul Williamson for the University of Liverpool’s introductory
 statistic courses ENVS450 and ENVS451. The additional functions included
-here were all produced by Dr Williamson, forked from Matthew Howard, and are only made available through this account for ease of access for students. Matthew Thompson, having taken over the teaching on the ENVS450 module, has forked the repository for the 2026/27 cohort at the University of Liverpool. 
+here were all produced by Dr Williamson, forked from Matthew Howard, and are only made available through this account for ease of access for students. Dr Matthew Thompson (Lecturer in Geographic Data Science), having taken over the teaching on the ENVS450 module, has forked the repository for the 2026/27 cohort at the University of Liverpool. 
 
 The goal of gdslStats is to provide a set of tools to simplify the
 process of conducting the types of analyses normally covered in an
